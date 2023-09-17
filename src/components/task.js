@@ -1,18 +1,22 @@
 import React from "react";
+import { formatDistanceToNow } from "date-fns";
 
-const Task = ({state = null, description}) => {
+
+  const Task = (props)=> {
     return (
-        <li className={state}>
-            <div className="view">
-              <input className="toggle" type="checkbox"/>
-              <label>
-                <span className="description">{description}</span>
-                <span className="created">created 5 minutes ago</span>
-              </label>
-              <button className="icon icon-edit"></button>
-              <button className="icon icon-destroy"></button>
-            </div>
-        </li>
+      <>
+        <div className="view">
+        <input className="toggle" type="checkbox" />
+        <label>
+          <span className="description">{props.description}</span>
+          <span className="created">created {formatDistanceToNow(props.date)} ago</span>
+        </label>
+        <button className="icon icon-edit"></button>
+        <button className="icon icon-destroy"></button>
+      </div>
+      <input type='text' className='edit' defaultValue={props.description}/>
+      </>
+      
     );
-};
-export default Task;
+}
+export default Task

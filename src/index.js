@@ -12,12 +12,36 @@ const root = createRoot(document.querySelector('.todoapp'));
 
 const App = () => {
 
+  const todoData = [
+    { 
+      id:1,
+      isCompleted: true,
+      isEditing: false,
+      description: 'Completed task',
+      date: new Date()
+    },
+    { 
+      id:2,
+      isCompleted: false,
+      isEditing: true,
+      description: 'Editing task',
+      date: new Date()
+    },
+    { 
+      id:3,
+      isCompleted: false,
+      isEditing: false,
+      description: 'Active task',
+      date: new Date()
+    }
+  ];
+
   return (
-    <div>
+    <section className="main">
       <NewTaskForm />
-      <TaskList />
+      <TaskList  todos = {todoData}/>
       <Footer />
-    </div>
+    </section>
   )
 }
 
