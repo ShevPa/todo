@@ -1,7 +1,7 @@
 import React from "react";
-import Task from "./task";
+import Task from "../Task/task";
 
-const TaskList = ({todos}) => {
+const TaskList = ({todos, onDeleted, onCompleted}) => {
   const todoElements = todos.map((item)=>{
       
       return(
@@ -10,7 +10,9 @@ const TaskList = ({todos}) => {
         className = {(item.isCompleted ? "completed" : "") +
         " " +
         (item.isEditing ? "editing" : "")}>
-          <Task {...item}/>
+          <Task task = {item} 
+          onDeleted={()=>onDeleted(item.id)}
+          onCompleted = {()=>onCompleted(item.id)}/>
         </li>
       );
     })
