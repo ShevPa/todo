@@ -20,8 +20,7 @@ import { formatDistanceToNow } from "date-fns";
             onClick={onDeleted}></button>
           </div>
           <input type='text' className='edit' defaultValue={description}/>
-        </>
-        
+        </>       
       );
     }
     

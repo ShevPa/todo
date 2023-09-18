@@ -1,9 +1,15 @@
 import React from "react";
 import Task from "../Task/task";
 
-const TaskList = ({todos, onDeleted, onCompleted}) => {
-  const todoElements = todos.map((item)=>{
-      
+const TaskList = ({todos, onDeleted, onCompleted, filterValue}) => {
+
+  const todoFiltredElements = todos.filter((item)=>{
+    if(filterValue === 'All') return true;
+    if(filterValue === 'Active') return !item.isCompleted ? true :false;
+    if(filterValue === 'Completed') return item.isCompleted ? true :false;
+    return false;
+  })
+  const todoElements = todoFiltredElements.map((item)=>{
       return(
         <li 
         key={item.id}
