@@ -5,8 +5,8 @@ const TaskList = ({todos, onDeleted, onCompleted, filterValue}) => {
 
   const todoFiltredElements = todos.filter((item)=>{
     if(filterValue === 'All') return true;
-    if(filterValue === 'Active') return !item.isCompleted ? true :false;
-    if(filterValue === 'Completed') return item.isCompleted ? true :false;
+    if(filterValue === 'Active') return !item.isCompleted;
+    if(filterValue === 'Completed') return item.isCompleted;
     return false;
   })
   const todoElements = todoFiltredElements.map((item)=>{
