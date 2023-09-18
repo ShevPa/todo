@@ -92,6 +92,19 @@ export default class TodoApp extends React.Component {
         };
       });
   };
+  editItem = (id, description)=>{
+    this.setState(({todoData})=>{
+      return {
+        todoData: todoData.map((el)=>{
+            if(el.id === id){
+                el.description = description;
+                el.isEditing = !el.isEditing;
+            }
+            return el;
+        })
+      };
+    });
+  }
   setFilter = (value) =>{
     this.setState({
       filterValue: value
@@ -108,6 +121,8 @@ export default class TodoApp extends React.Component {
           <TaskList  todos = {this.state.todoData}
           onDeleted={this.deleteItem}
           onCompleted = {this.toggleCompleted}
+          onEditing = {this.toggleEditing}
+          onEditingDescription = {this.editItem}
           filterValue = {this.state.filterValue}/>
           <Footer toDo = {todoCount}
           setFilter ={this.setFilter} filterValue = {this.state.filterValue}

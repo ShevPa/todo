@@ -1,7 +1,7 @@
 import React from "react";
 import Task from "../Task/task";
 
-const TaskList = ({todos, onDeleted, onCompleted, filterValue}) => {
+const TaskList = ({todos, onDeleted, onCompleted, onEditing, onEditingDescription, filterValue}) => {
 
   const todoFiltredElements = todos.filter((item)=>{
     if(filterValue === 'All') return true;
@@ -18,7 +18,9 @@ const TaskList = ({todos, onDeleted, onCompleted, filterValue}) => {
         (item.isEditing ? "editing" : "")}>
           <Task task = {item} 
           onDeleted={()=>onDeleted(item.id)}
-          onCompleted = {()=>onCompleted(item.id)}/>
+          onCompleted = {()=>onCompleted(item.id)}
+          onEditing = {()=>onEditing(item.id)}
+          onEditingDescription={onEditingDescription}/>
         </li>
       );
     })
