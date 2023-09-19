@@ -1,6 +1,11 @@
 import React from "react";
+import PropTypes from "prop-types"
 
 export default class NewTaskForm extends React.Component{
+
+    static propTypes = {
+        onItemAdded: PropTypes.func.isRequired,
+    }
 
     state ={
         label:''
@@ -19,6 +24,8 @@ export default class NewTaskForm extends React.Component{
             label: ''
         });
     };
+
+
 
     render(){
         return (

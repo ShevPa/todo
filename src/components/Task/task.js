@@ -1,13 +1,30 @@
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
+import PropTypes from "prop-types";
 
 
   export default class Task extends React.Component{
 
-    state={
+    static defaultProps = {
+      isCompleted: false,
+      description: 'Text',
+      date: new Date(),
+    }
+
+    static propTypes = {
+      task: PropTypes.object.isRequired,
+      onDeleted: PropTypes.func.isRequired,
+      onCompleted: PropTypes.func.isRequired,
+      onEditing: PropTypes.func.isRequired,
+      isCompleted: PropTypes.bool,
+      description: PropTypes.string,
+      date: PropTypes.instanceOf(Date),
+    }
+
+    state = {
       label: this.props.task.description      
     }
-    onKeyUp= (event) => {
+    onKeyUp = (event) => {
       this.setState({
           label: event.target.value
       });
@@ -34,7 +51,7 @@ import { formatDistanceToNow } from "date-fns";
             onClick={onDeleted}></button>
           </div>
           <input type='text' className='edit'
-          defaultValue={description}
+          defaultValue={this.state.label}
           onKeyUp = {this.onKeyUp}
           />
         </>       
