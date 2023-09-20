@@ -1,9 +1,9 @@
-import React from "react";
-import TasksFilter from "../TasksFilter/tasks-filter";
-import PropTypes from 'prop-types';
+import React from 'react'
+import PropTypes from 'prop-types'
 
-export default class Footer extends React.Component{
+import TasksFilter from '../TasksFilter/tasks-filter'
 
+export default class Footer extends React.Component {
   static defaultProps = {
     toDo: 0,
     filterValue: 'All',
@@ -16,15 +16,16 @@ export default class Footer extends React.Component{
     clearCompleted: PropTypes.func.isRequired,
   }
 
-  render(){
-    const {toDo, filterValue, setFilter, clearCompleted} = this.props;
+  render() {
+    const { toDo, filterValue, setFilter, clearCompleted } = this.props
     return (
       <footer className="footer">
         <span className="todo-count">{toDo} items left</span>
-        <TasksFilter filterValue={filterValue} setFilter={setFilter}/>
-        <button className="clear-completed"
-        onClick={clearCompleted}>Clear completed</button>
+        <TasksFilter filterValue={filterValue} setFilter={setFilter} />
+        <button type="button" className="clear-completed" onClick={clearCompleted}>
+          Clear completed
+        </button>
       </footer>
-    );
+    )
   }
 }
