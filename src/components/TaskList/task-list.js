@@ -3,7 +3,16 @@ import PropTypes from 'prop-types'
 
 import Task from '../Task/task'
 
-function TaskList({ todos, onDeleted, onCompleted, onEditing, onEditingDescription, filterValue }) {
+function TaskList({
+  todos,
+  onDeleted,
+  onCompleted,
+  onEditing,
+  onEditingDescription,
+  filterValue,
+  playTimer,
+  pauseTimer,
+}) {
   const todoFiltredElements = todos.filter((item) => {
     if (filterValue === 'All') return true
     if (filterValue === 'Active') return !item.isCompleted
@@ -17,6 +26,8 @@ function TaskList({ todos, onDeleted, onCompleted, onEditing, onEditingDescripti
         onDeleted={() => onDeleted(item.id)}
         onCompleted={() => onCompleted(item.id)}
         onEditing={() => onEditing(item.id)}
+        playTimer={() => playTimer(item.id)}
+        pauseTimer={() => pauseTimer(item.id)}
         onEditingDescription={onEditingDescription}
       />
     </li>

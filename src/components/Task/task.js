@@ -33,15 +33,20 @@ export default class Task extends React.Component {
   }
 
   render() {
-    const { task, onDeleted, onCompleted, onEditing } = this.props
-    const { isCompleted, description, date } = task
+    const { task, onDeleted, onCompleted, onEditing, playTimer, pauseTimer } = this.props
+    const { isCompleted, description, date, minutes, seconds } = task
     return (
       <>
         <div className="view">
           <input className="toggle" type="checkbox" checked={isCompleted} onChange={onCompleted} />
-          <label onClick={onCompleted}>
-            <span className="description">{description}</span>
-            <span className="created">created {formatDistanceToNow(date)} ago</span>
+          <label>
+            <span className="title">{description}</span>
+            <span className="description">
+              <button type="button" className="icon icon-play" onClick={playTimer} />
+              <button type="button" className="icon icon-pause" onClick={pauseTimer} />
+              {minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+            </span>
+            <span className="description">created {formatDistanceToNow(date)} ago</span>
           </label>
           <button type="button" className="icon icon-edit" onClick={onEditing} />
           <button type="button" className="icon icon-destroy" onClick={onDeleted} />

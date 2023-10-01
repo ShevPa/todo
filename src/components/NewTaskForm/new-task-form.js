@@ -8,6 +8,8 @@ export default class NewTaskForm extends React.Component {
 
   state = {
     label: '',
+    minutes: '',
+    seconds: '',
   }
 
   onLabelChange = (event) => {
@@ -16,11 +18,25 @@ export default class NewTaskForm extends React.Component {
     })
   }
 
+  onMinutChange = (event) => {
+    this.setState({
+      minutes: event.target.value,
+    })
+  }
+
+  onSecondChange = (event) => {
+    this.setState({
+      seconds: event.target.value,
+    })
+  }
+
   onSubmit = (event) => {
     event.preventDefault()
-    this.props.onItemAdded(this.state.label)
+    this.props.onItemAdded(this.state.label, this.state.minutes, this.state.seconds)
     this.setState({
       label: '',
+      minutes: '',
+      seconds: '',
     })
   }
 
@@ -28,16 +44,36 @@ export default class NewTaskForm extends React.Component {
     return (
       <header className="header">
         <h1>todos</h1>
-        <form onSubmit={this.onSubmit}>
+        <form className="new-todo-form" onSubmit={this.onSubmit}>
           <input
             type="text"
             className="new-todo"
-            placeholder="What needs to be done?"
+            placeholder="Task"
             required
             autoFocus
             onChange={this.onLabelChange}
             value={this.state.label}
           />
+          <input
+            type="number"
+            className="new-todo-form__timer"
+            placeholder="Min"
+            autoFocus
+            onChange={this.onMinutChange}
+            value={this.state.minutes}
+            min={0}
+          />
+          <input
+            type="number"
+            className="new-todo-form__timer"
+            placeholder="Sec"
+            autoFocus
+            onChange={this.onSecondChange}
+            value={this.state.seconds}
+            min={1}
+            max={59}
+          />
+          <input style={{ display: 'none' }} type="submit" />
         </form>
       </header>
     )

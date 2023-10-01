@@ -9,43 +9,26 @@ export default class TodoApp extends React.Component {
 
   state = {
     filterValue: 'All',
-    todoData: [
-      {
-        id: 1,
-        isCompleted: true,
-        isEditing: false,
-        description: 'Completed task',
-        date: new Date(),
-      },
-      {
-        id: 2,
-        isCompleted: false,
-        isEditing: false,
-        description: 'Editing task',
-        date: new Date(),
-      },
-      {
-        id: 3,
-        isCompleted: false,
-        isEditing: false,
-        description: 'Active task',
-        date: new Date(),
-      },
-    ],
+    todoData: [],
   }
 
-  addItem = (text) => {
+  addItem = (text, min, sec) => {
     this.setState(({ todoData }) => {
       return {
-        todoData: [...todoData, this.createTodoItem(text)],
+        todoData: [...todoData, this.createTodoItem(text, min, sec)],
       }
     })
   }
 
   deleteItem = (id) => {
     this.setState(({ todoData }) => {
+      const index = todoData.findIndex((el) => el.id === id)
+      const newData = [...todoData]
+      if (newData[index].isTimerPlay === true) {
+        clearInterval(newData[index.timerId])
+      }
       return {
-        todoData: todoData.filter((el) => el.id !== id),
+        todoData: newData.filter((el) => el.id !== id),
       }
     })
   }
@@ -98,19 +81,85 @@ export default class TodoApp extends React.Component {
     })
   }
 
+  playTimer = (id) => {
+    const { isTimerPlay } = this.state.todoData.find((el) => el.id === id)
+    if (!isTimerPlay) {
+      const timerId = setInterval(() => {
+        this.setState(({ todoData }) => {
+          const newData = todoData.map((item) => {
+            if (item.id === id) {
+              let min = item.minutes
+              let sec = item.seconds
+              if (min === 0 && sec === 0) {
+                this.pauseTimer(id)
+              }
+              sec--
+              if (sec < 0 && min > 0) {
+                sec = 59
+                min--
+              }
+              if (sec < 0 && min === 0) {
+                sec = 0
+                this.pauseTimer(id)
+              }
+              return {
+                ...item,
+                minutes: min,
+                seconds: sec,
+              }
+            }
+            return item
+          })
+          return {
+            todoData: newData,
+          }
+        })
+      }, 1000)
+      this.setState(({ todoData }) => {
+        const index = todoData.findIndex((el) => el.id === id)
+        const newData = [...todoData]
+        newData[index].timerId = timerId
+        newData[index].isTimerPlay = true
+        return {
+          todoData: newData,
+        }
+      })
+    }
+  }
+
+  pauseTimer = (id) => {
+    const { isTimerPlay, timerId } = this.state.todoData.find((el) => el.id === id)
+    if (isTimerPlay) {
+      this.setState(({ todoData }) => {
+        const index = todoData.findIndex((el) => el.id === id)
+        const newData = [...todoData]
+        newData[index].timerId = null
+        newData[index].isTimerPlay = false
+        return {
+          todoData: newData,
+        }
+      })
+      clearInterval(timerId)
+    }
+  }
+
   setFilter = (value) => {
     this.setState({
       filterValue: value,
     })
   }
 
-  createTodoItem(description) {
+  createTodoItem(description, minutes, seconds) {
     return {
       description,
       isCompleted: false,
       isEditing: false,
       date: new Date(),
       id: this.maxId++,
+      minutes,
+      seconds,
+      isTimerPlay: false,
+      timerId: null,
     }
   }
 
@@ -127,6 +176,8 @@ export default class TodoApp extends React.Component {
           onEditing={this.toggleEditing}
           onEditingDescription={this.editItem}
           filterValue={this.state.filterValue}
+          playTimer={this.playTimer}
+          pauseTimer={this.pauseTimer}
         />
         <Footer
           toDo={todoCount}
