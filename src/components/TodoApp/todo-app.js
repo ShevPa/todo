@@ -1,97 +1,111 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import NewTaskForm from '../NewTaskForm/new-task-form'
 import TaskList from '../TaskList/task-list'
 import Footer from '../Footer/footer'
 
-export default class TodoApp extends React.Component {
-  maxId = 100
+function TodoApp() {
+  const [maxId, setMaxId] = useState(100)
+  const [filterValue, setFilterValue] = useState('All')
+  const [todoData, setTodoData] = useState([])
 
-  state = {
-    filterValue: 'All',
-    todoData: [],
+  const createTodoItem = (description, minutes, seconds) => {
+    setMaxId(maxId + 1)
+    return {
+      description,
+      isCompleted: false,
+      isEditing: false,
+      date: new Date(),
+      id: maxId,
+      minutes,
+      seconds,
+      isTimerPlay: false,
+      timerId: null,
+    }
   }
 
-  addItem = (text, min, sec) => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: [...todoData, this.createTodoItem(text, min, sec)],
-      }
+  const addItem = (text, min, sec) => {
+    setTodoData((data) => {
+      return [...data, createTodoItem(text, min, sec)]
     })
   }
 
-  deleteItem = (id) => {
-    this.setState(({ todoData }) => {
-      const index = todoData.findIndex((el) => el.id === id)
-      const newData = [...todoData]
-      if (newData[index].isTimerPlay === true) {
-        clearInterval(newData[index.timerId])
-      }
-      return {
-        todoData: newData.filter((el) => el.id !== id),
-      }
+  const deleteCompleted = () => {
+    setTodoData((data) => {
+      return data.filter((el) => !el.isCompleted)
     })
   }
 
-  deleteCompleted = () => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: todoData.filter((el) => !el.isCompleted),
-      }
+  const toggleCompleted = (id) => {
+    setTodoData((data) => {
+      return data.map((el) => {
+        if (el.id === id) {
+          el.isCompleted = !el.isCompleted
+        }
+        return el
+      })
     })
   }
 
-  toggleCompleted = (id) => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: todoData.map((el) => {
-          if (el.id === id) {
-            el.isCompleted = !el.isCompleted
-          }
-          return el
-        }),
-      }
+  const toggleEditing = (id) => {
+    setTodoData((data) => {
+      return data.map((el) => {
+        if (el.id === id) {
+          el.isEditing = !el.isEditing
+        }
+        return el
+      })
     })
   }
 
-  toggleEditing = (id) => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: todoData.map((el) => {
-          if (el.id === id) {
-            el.isEditing = !el.isEditing
-          }
-          return el
-        }),
-      }
+  const editItem = (id, description) => {
+    setTodoData((data) => {
+      return data.map((el) => {
+        if (el.id === id) {
+          el.description = description
+          el.isEditing = !el.isEditing
+        }
+        return el
+      })
     })
   }
 
-  editItem = (id, description) => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: todoData.map((el) => {
-          if (el.id === id) {
-            el.description = description
-            el.isEditing = !el.isEditing
-          }
-          return el
-        }),
-      }
+  const setFilter = (value) => {
+    setFilterValue(value)
+  }
+
+  const pauseTimer = (id) => {
+    const { isTimerPlay, timerId } = todoData.find((el) => el.id === id)
+    if (isTimerPlay) {
+      setTodoData((data) => {
+        const index = data.findIndex((el) => el.id === id)
+        const newData = [...data]
+        newData[index].timerId = null
+        newData[index].isTimerPlay = false
+        return newData
+      })
+      clearInterval(timerId)
+    }
+  }
+
+  const deleteItem = (id) => {
+    pauseTimer(id)
+    setTodoData((data) => {
+      return data.filter((el) => el.id !== id)
     })
   }
 
-  playTimer = (id) => {
-    const { isTimerPlay } = this.state.todoData.find((el) => el.id === id)
+  const playTimer = (id) => {
+    const { isTimerPlay } = todoData.find((el) => el.id === id)
     if (!isTimerPlay) {
       const timerId = setInterval(() => {
-        this.setState(({ todoData }) => {
-          const newData = todoData.map((item) => {
+        setTodoData((data) => {
+          const newData = data.map((item) => {
             if (item.id === id) {
               let min = item.minutes
               let sec = item.seconds
               if (min === 0 && sec === 0) {
-                this.pauseTimer(id)
+                pauseTimer(id)
               }
               sec--
               if (sec < 0 && min > 0) {
@@ -100,7 +114,7 @@ export default class TodoApp extends React.Component {
               }
               if (sec < 0 && min === 0) {
                 sec = 0
-                this.pauseTimer(id)
+                pauseTimer(id)
               }
               return {
                 ...item,
@@ -110,82 +124,36 @@ export default class TodoApp extends React.Component {
             }
             return item
           })
-          return {
-            todoData: newData,
-          }
+          return newData
         })
       }, 1000)
-      this.setState(({ todoData }) => {
-        const index = todoData.findIndex((el) => el.id === id)
-        const newData = [...todoData]
+      setTodoData((data) => {
+        const index = data.findIndex((el) => el.id === id)
+        const newData = [...data]
         newData[index].timerId = timerId
         newData[index].isTimerPlay = true
-        return {
-          todoData: newData,
-        }
+        return newData
       })
     }
   }
 
-  pauseTimer = (id) => {
-    const { isTimerPlay, timerId } = this.state.todoData.find((el) => el.id === id)
-    if (isTimerPlay) {
-      this.setState(({ todoData }) => {
-        const index = todoData.findIndex((el) => el.id === id)
-        const newData = [...todoData]
-        newData[index].timerId = null
-        newData[index].isTimerPlay = false
-        return {
-          todoData: newData,
-        }
-      })
-      clearInterval(timerId)
-    }
-  }
+  const todoCount = todoData.filter((el) => !el.isCompleted).length
 
-  setFilter = (value) => {
-    this.setState({
-      filterValue: value,
-    })
-  }
-
-  createTodoItem(description, minutes, seconds) {
-    return {
-      description,
-      isCompleted: false,
-      isEditing: false,
-      date: new Date(),
-      id: this.maxId++,
-      minutes,
-      seconds,
-      isTimerPlay: false,
-      timerId: null,
-    }
-  }
-
-  render() {
-    const todoCount = this.state.todoData.filter((el) => !el.isCompleted).length
-
-    return (
-      <section className="main">
-        <NewTaskForm onItemAdded={this.addItem} />
-        <TaskList
-          todos={this.state.todoData}
-          onDeleted={this.deleteItem}
-          onCompleted={this.toggleCompleted}
-          onEditing={this.toggleEditing}
-          onEditingDescription={this.editItem}
-          filterValue={this.state.filterValue}
-          playTimer={this.playTimer}
-          pauseTimer={this.pauseTimer}
-        />
-        <Footer
-          toDo={todoCount}
-          setFilter={this.setFilter}
-          filterValue={this.state.filterValue}
-          clearCompleted={this.deleteCompleted}
-        />
-      </section>
-    )
-  }
+  return (
+    <section className="main">
+      <NewTaskForm onItemAdded={addItem} />
+      <TaskList
+        todos={todoData}
+        onDeleted={deleteItem}
+        onCompleted={toggleCompleted}
+        onEditing={toggleEditing}
+        onEditingDescription={editItem}
+        filterValue={filterValue}
+        playTimer={playTimer}
+        pauseTimer={pauseTimer}
+      />
+      <Footer toDo={todoCount} setFilter={setFilter} filterValue={filterValue} clearCompleted={deleteCompleted} />
+    </section>
+  )
 }
+export default TodoApp
